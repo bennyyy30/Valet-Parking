@@ -1,8 +1,6 @@
 # CPSC131-Project-3
 Project 3 - Valet Parking
 
-Group members:
+Group member(s):
 
-Ada Lovelace adalovelace@csu.fullerton.edu
-
-Charles Babbage charlesbab@csu.fullerton.edu
+Benson Lee - blee71@csu.fullerton.edu
