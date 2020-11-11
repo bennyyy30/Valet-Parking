@@ -17,37 +17,50 @@ ValetParking::~ValetParking() {
 
 // return the maximum number of cars that all stalls can accommodate
 size_t ValetParking::totalStallSpaces() {
-  // ADD YOUR CODE HERE
+  return _numberofstalls * _stallcapacity;
 }
 
 // return the number of cars parked in all the stalls
 size_t ValetParking::carsInStalls() {
-  // ADD YOUR CODE HERE
+  size_t _stallSum = 0;
+
+  for (size_t i = 0; i < _numberofstalls; ++i) {
+    _stallSum += _parkingstall[i].size();
+  }
+  return _stallSum;
 }
 
 // return the number of cars waiting in checkout line to pay before exiting the lot
 size_t ValetParking::carsInCheckOut() {
-  // ADD YOUR CODE HERE
+  return _checkout->size();
 }
 
 // return the number of available parking spaces in all the stalls
 size_t ValetParking::availableStallSpaces() {
-  // ADD YOUR CODE HERE
+  size_t _parkingSpaces = 0;
+
+  for (size_t i = 0; i < _numberofstalls; ++i) {
+    _parkingSpaces += _stallcapacity - _parkingstall[i].size();
+  }
+  return _parkingSpaces;
 }
 
 // return the total amount based on the number of tickets issued
 double ValetParking::totalSales() {
-  // ADD YOUR CODE HERE
+  return _currentticket;
 }
 
 // remove and return the ticket# of car at front of the checkout queue, and the fee is collected
 size_t ValetParking::pay() {
-  // ADD YOUR CODE HERE
+  _paid += _fee;
+  auto temp = _checkout->front();
+  _checkout->pop();
+  return temp;
 }
 
 // return the total amount customers have paid so far based on the number of cars that exited the lot
 double ValetParking::totalPaid() {
-  // ADD YOUR CODE HERE
+  return _paid;
 }
 
 // return true if all stalls and checkout queue are empty
@@ -83,7 +96,7 @@ bool ValetParking::stallEmpty() {
 // return true if all stalls are full
 bool ValetParking::stallFull() {
   for (int i = 0; i < _numberofstalls; ++i) {
-    if (_parkingstall[i].size() <= _stallcapacity) {
+    if (_parkingstall[i].size() < _stallcapacity) {
       return false;
     }
   }
@@ -92,24 +105,39 @@ bool ValetParking::stallFull() {
 
 // return the next ticket# to issue to customer
 size_t ValetParking::getNextTicket() {
-  // ADD YOUR CODE HERE
+  return ++_currentticket;
 }
 
 // on success: return stall# (index-1 base), on failure: return 0
 size_t ValetParking::checkIn() {
-  // ADD YOUR CODE HERE
+  for (int i = 0; i < _numberofstalls; ++i) {
+    if (_parkingstall[i].size() < _stallcapacity) {
+      _parkingstall[i].emplace(getNextTicket());
+      return (i + 1);
+    }
+  }
+  return 0;
 }
 
 // return the stall# (index-1 base) in which the ticket# resides
 size_t ValetParking::stallNumber(size_t ticket) {
-  // ADD YOUR CODE HERE
+  auto _stallNum = _parkingstall;
+
+  for (int i = 0; i < _numberofstalls; ++i) {
+    auto cache_size = _stallNum[i].size();
+    for (int j = 0; j < cache_size; ++j) {
+      if (_stallNum[i].top() == ticket) {
+        return (i + 1);
+      }
+      _stallNum[i].pop();
+    }
+  }
+  return 0;
 }
 
 // retrieve the ticket# from the stall and place the ticket in the checkout queue;
 // on success: return true
 bool ValetParking::checkOut(size_t stallnumber, size_t ticket) {
-  auto tempStall = _parkingstall.at(stallnumber - 1).top();
-
   if (!queueFull()) {
     _parkingstall.at(stallnumber - 1).pop();
     _checkout->emplace(ticket);
